@@ -7,6 +7,7 @@ from bullet import Bullet
 from game_stats import GameStats 
 from settings import Settings
 from ship import Ship
+from buttom import Buttom
 
 #--------------------------------------------------------------
 
@@ -22,6 +23,9 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width ,self.settings.screen_height))
         
         pygame.display.set_caption("Alien Invasion") # the name that appere on top of the window 
+
+        # make the start buttom 
+        self.start_buttom = Buttom(self, "Start")
 
         self.stat = GameStats(self)
         self.ship = Ship(self)
@@ -63,8 +67,24 @@ class AlienInvasion:
                 self._check_keydown_events(event) 
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-            
-
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_start_button(mouse_pos)
+             
+    def _check_start_button(self,mouse_pos):
+        buttom_clicked = self.start_buttom.rect.collidepoint(mouse_pos)
+        if buttom_clicked and not self.stat.game_active:
+            # hide the mouse cursor 
+            pygame.mouse.set_visible(False)
+            # reset the game stats
+            self.stat._reset_stats()
+            self.stat.game_active = True
+             # get rid of the old bullet and aliens 
+            self.aliens.empty()
+            self.bullets.empty()
+            # create a new fleet and center the ship 
+            self._create_fleet()
+            self.ship.center_ship() 
 
     def _check_keydown_events(self, event):
         if event.key == pygame.K_RIGHT:
@@ -118,6 +138,7 @@ class AlienInvasion:
             sleep(0.5)
         else :
             self.stat.game_active = False
+            pygame.mouse.set_visible(True)
 
 
     def _fire_bullet(self):
@@ -172,7 +193,9 @@ class AlienInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
             
-        
+        # draw the start buttom if the game is inactive 
+        if not self.stat.game_active:
+            self.start_buttom.draw_buttom()
         # make the most resently drawn screen visible 
         pygame.display.flip()
     
