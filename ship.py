@@ -1,8 +1,10 @@
 import pygame 
+from pygame.sprite import Sprite 
 
-class Ship:
-    def __init__( self, ai_game):
+class Ship(Sprite):
+    def __init__( self, ai_game,scale):
         # initialize the ship and set it's starting position 
+        super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
@@ -11,7 +13,7 @@ class Ship:
         self.image = pygame.image.load('imgs/ship2.bmp')
         self.width = self.image.get_width()
         self.height = self.image.get_height()
-        self.image = pygame.transform.scale(self.image , (int(self.width * 0.08),int(self.height * 0.08)))
+        self.image = pygame.transform.scale(self.image , (int(self.width * scale),int(self.height * scale)))
         self.rect = self.image.get_rect()
 
         # start each new ship in the bottom center of the screen 
